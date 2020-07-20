@@ -27,8 +27,10 @@ nnoremap <Leader>i :WinGo netrw<CR>
 
 "refresh netrw
 function Refresh(var)
+    call ToggleAutoTree()
     bd
     exec "Vexplore ".a:var | wincmd H | vertical resize 30 | set wfw | wincmd =
+    call ToggleAutoTree()
 endfunction
 
 "highlight file location within netrw
