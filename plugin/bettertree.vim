@@ -3,6 +3,10 @@
 "
 
 "general netrw settings
+set ignorecase
+set splitright
+set splitbelow
+let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro'
 let g:netrw_banner=0
 let g:netrw_liststyle=3
 let g:netrw_browse_split=4
@@ -97,11 +101,9 @@ endfunction
 
 noremap <silent> <C-t> :silent! call ToggleNetrw()<CR>
 
-"toggle hidden files
-let g:netrw_hide=1
-
 "tree navigation
 
+"differentiate between local and remote path
 function LocalRemote()
     let var=b:netrw_curdir
     let var=split(var, '/')
@@ -116,6 +118,7 @@ function LocalRemote()
     return var
 endfunction
 
+"return dir name
 function DirParse()
     let var=b:netrw_curdir
     let var=split(var, '/')
@@ -123,6 +126,7 @@ function DirParse()
     return var
 endfunction
 
+"navigate up the tree stucture
 function ForwardNode()
     let var=LocalRemote()
 
@@ -133,6 +137,7 @@ function ForwardNode()
     endif
 endfunction
 
+"navigate down the tree structure
 function BackNode()
     let var=LocalRemote()
 
@@ -143,11 +148,13 @@ function BackNode()
     endif
 endfunction
 
+"navigate up a remote tree
 function RemoteForwardNode()
     normal gd
     call Refresh(b:netrw_curdir)
 endfunction
 
+"navigate down a remote tree
 function RemoteBackNode()
     let var=DirParse()
     let var='| '.var
@@ -157,12 +164,14 @@ function RemoteBackNode()
     call search(var)
 endfunction
 
+"navigate up a local tree
 function LocalForwardNode()
     normal gn
     normal gg
     normal j
 endfunction
 
+"navigate down a local tree
 function LocalBackNode()
     let var=DirParse()
     let var='| '.var
@@ -174,49 +183,13 @@ function LocalBackNode()
     call search(var)
 endfunction
 
+"tree navigation shortcut keys
 autocmd filetype netrw nmap <buffer> <c-m> :call ForwardNode()<CR>
 autocmd filetype netrw nmap <buffer> <c-n> :call BackNode()<CR>
 
-"create a new file on the remote machine
-function! RemoteFile()
-    let l:filename=input("please enter filename: ")
-    let curdir=b:netrw_curdir
-    let list=split(curdir,'/')
+"""file / folder creation
 
-    let var='ssh '.list[2]
-    let dir=list[4:-1]+['']
-    let dir=join(dir,'/')
-    let str=var.' "touch /'.dir.l:filename.'"'
-
-    echo str
-
-    call system(str)
-    call Refresh(b:netrw_curdir)
-
-    let var='| '.l:filename
-    call search(var)
-endfunction
-
-" create a new directory on a remtoe machine
-function! RemoteDir()
-    let l:filename=input("please enter directory name: ")
-    let curdir=b:netrw_curdir
-    let list=split(curdir,'/')
-
-    let var='ssh '.list[2]
-    let dir=list[4:-1]+['']
-    let dir=join(dir,'/')
-    let str=var.' "mkdir /'.dir.l:filename.'"'
-
-    echo str
-
-    call system(str)
-    call Refresh(b:netrw_curdir)
-
-    let var='| '.l:filename
-    call search(var)
-endfunction
-
+"create a new file on a local host
 function! LocalFile()
     let l:filename=input("please enter filename: ")
     let curdir=b:netrw_curdir
@@ -230,6 +203,25 @@ function! LocalFile()
     call search(var)
 endfunction
 
+"create a new file on a remote host
+function! RemoteFile()
+    let l:filename=input("please enter filename: ")
+    let curdir=b:netrw_curdir
+    let list=split(curdir,'/')
+
+    let var='ssh '.list[2]
+    let dir=list[4:-1]+['']
+    let dir=join(dir,'/')
+    let str=var.' "touch /'.dir.l:filename.'"'
+
+    call system(str)
+    call Refresh(b:netrw_curdir)
+
+    let var='| '.l:filename
+    call search(var)
+endfunction
+
+"create a new directory on a local machine
 function! LocalDir()
     let l:filename=input("please enter directory name: ")
     let curdir=b:netrw_curdir
@@ -243,6 +235,25 @@ function! LocalDir()
     call search(var)
 endfunction
 
+" create a new directory on a remote machine
+function! RemoteDir()
+    let l:filename=input("please enter directory name: ")
+    let curdir=b:netrw_curdir
+    let list=split(curdir,'/')
+
+    let var='ssh '.list[2]
+    let dir=list[4:-1]+['']
+    let dir=join(dir,'/')
+    let str=var.' "mkdir /'.dir.l:filename.'"'
+
+    call system(str)
+    call Refresh(b:netrw_curdir)
+
+    let var='| '.l:filename
+    call search(var)
+endfunction
+
+"differentiate between local and remote new file
 function! NewFile()
     let var=b:netrw_curdir
     let var=split(var, '/')
@@ -254,6 +265,7 @@ function! NewFile()
     endif
 endfunction
 
+"differentiate between local and remote new directory
 function! NewDir()
     let var=b:netrw_curdir
     let var=split(var, '/')
@@ -265,11 +277,13 @@ function! NewDir()
     endif
 endfunction
 
+"new file / new directory shorcuyt keys
 autocmd filetype netrw nmap <buffer> % :call NewFile()<CR>
 autocmd filetype netrw nmap <buffer> d :call NewDir()<CR>
 
-"path dir targets
+"""path dir targets
 
+"return path, is dir or file, is local or remote 
 function ParsePath(list)
     let var=a:list
     let list=[]
@@ -311,12 +325,14 @@ function ParsePath(list)
     return list
 endfunction
 
+"return mark file list
 function! ItemList()
     let var=netrw#Expose("netrwmarkfilelist")
     let a=ParsePath(var)
     return a
 endfunction
 
+"return item path
 function! ItemPath()
     let list=[]
     normal mf
@@ -328,6 +344,7 @@ function! ItemPath()
     return var
 endfunction
 
+"differentiate between single item and multiple item mark file list
 function! MF_List()
     let mf_list=netrw#Expose("netrwmarkfilelist")
     let var=mf_list[0]
@@ -339,6 +356,7 @@ function! MF_List()
     return var
 endfunction
 
+"format target path
 function! TargetParse()
     let path=ItemPath()
     let path=path[0]
@@ -350,6 +368,7 @@ function! TargetParse()
     return path
 endfunction
 
+"return target path
 function! Target()
     normal gg
     normal j
@@ -375,7 +394,36 @@ function! Target()
     return list
 endfunction
 
-"remove item
+"""open, copy, move delete functions
+
+"open file 
+function! OpenFile()
+    normal gf
+endfunction
+
+autocmd filetype netrw nmap <buffer> o :call OpenFile()<CR>
+
+"open file vertical split
+function! OpenVerticalWin()
+    normal o
+    wincmd =
+endfunction
+
+autocmd filetype netrw nmap <buffer> v :call OpenVerticalWin()<CR>
+
+"open file in previous window
+function! OpenPreviousWin()
+    let var=ItemPath()
+    let var=var[0]
+    let var=var[0]
+    wincmd p
+    cd
+    execute 'edit '.var
+endfunction
+
+autocmd filetype netrw nmap <buffer> p :call OpenPreviousWin()<CR>
+
+"remove item prompt
 function! RemoveItemPrompt()
     let refresh_path=b:netrw_curdir
     let char=split(refresh_path, '\zs')
@@ -409,7 +457,7 @@ endfunction
 
 autocmd filetype netrw nmap <buffer> D :call RemoveItemPrompt()<CR>
 
-
+"delete items
 function! RemoveItems()
     let mf_list=MF_List()
 
@@ -437,7 +485,7 @@ function! RemoveItems()
     endfor
 endfunction
 
-"copy move item
+"copy move item prompt
 function! MoveCopyItemPrompt(var)
     let mf_list=MF_List()
     let var=a:var
@@ -467,9 +515,11 @@ function! MoveCopyItemPrompt(var)
     endif
 endfunction
 
+"move copy shortcut keys
 autocmd filetype netrw nmap <buffer> C :call MoveCopyItemPrompt('cp')<CR>
 autocmd filetype netrw nmap <buffer> M :call MoveCopyItemPrompt('mv')<CR>
 
+"differentiate between local and remote move / copy
 function MoveCopy(cmd, target)
     let mf_list=MF_List()
     let cmd=a:cmd
@@ -497,6 +547,7 @@ function MoveCopy(cmd, target)
     endfor
 endfunction
 
+"copy / move a local item to a local target
 function! LocalCopyMove(path, target, cmd)
     let path=a:path[0]
     let target=a:target[0]
@@ -511,6 +562,7 @@ function! LocalCopyMove(path, target, cmd)
     call system(str)
 endfunction
 
+"copy / move a remote item to a remote target
 function! RemoteCopyMove(path, target, cmd)
     let path=a:path[0]
     let target=a:target[0]
@@ -525,8 +577,8 @@ function! RemoteCopyMove(path, target, cmd)
     call system(str)
 endfunction
 
+"copy / move a local item to a remote target
 function! LocalRemoteCopy(path, target)
-
     if (a:path[1]=='true')
         let cmd=' -r '
     else
@@ -537,8 +589,8 @@ function! LocalRemoteCopy(path, target)
     call system(str)
 endfunction
 
+"copy / move a remote item to a local target
 function! RemoteLocalCopy(path, target)
-
     if (a:path[1]=='true')
         let cmd=' -r '
     else
