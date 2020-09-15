@@ -405,7 +405,11 @@ autocmd filetype netrw nmap <buffer> o :call OpenFile()<CR>
 
 "open file vertical split
 function! OpenVerticalWin()
-    normal o
+    let var=ItemPath()
+    let var=var[0]
+    let var=var[0]
+    wincmd l
+    execute 'vsplit '.var
     wincmd =
 endfunction
 
