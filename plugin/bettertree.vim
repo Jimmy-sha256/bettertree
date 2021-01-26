@@ -112,7 +112,7 @@ function LocalRemote()
     if (var=='scp:')
         let var='remote'
     else
-        let car='local'
+        let var='local'
     endif
 
     return var
