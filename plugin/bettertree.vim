@@ -429,6 +429,25 @@ autocmd filetype netrw nmap <buffer> p :call OpenPreviousWin()<CR>
 
 "remove item prompt
 function! RemoveItemPrompt()
+
+    let mf_list=MF_List()
+
+    for i in mf_list
+        if i[0] == b:netrw_curdir
+            let path_split=split(b:netrw_curdir, '/')
+            let path_join=join(path_split[0:-2], '/')
+            let refresh_path='/'.path_join.'/'
+        else
+            let refresh_path = b:netrw_curdir
+        endif
+    endfor
+
+
+    "let refresh_path=b:netrw_curdir
+    "let char=split(refresh_path, '\zs')
+    "echo refresh_path
+
+
     "let refresh_path=b:netrw_curdir
     "let char=split(refresh_path, '\zs')
     "let split=split(refresh_path, '/')
@@ -441,7 +460,7 @@ function! RemoveItemPrompt()
     "    let refresh_path=b:netrw_curdir
     "endif
 
-    let mf_list=MF_List()
+    "let mf_list=MF_List()
 
     for i in mf_list
         echo i[0]
@@ -458,6 +477,7 @@ function! RemoveItemPrompt()
     endif
 
 endfunction
+
 
 autocmd filetype netrw nmap <buffer> D :call RemoveItemPrompt()<CR>
 
