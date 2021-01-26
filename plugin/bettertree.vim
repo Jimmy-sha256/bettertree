@@ -429,17 +429,17 @@ autocmd filetype netrw nmap <buffer> p :call OpenPreviousWin()<CR>
 
 "remove item prompt
 function! RemoveItemPrompt()
-    let refresh_path=b:netrw_curdir
-    let char=split(refresh_path, '\zs')
-    let split=split(refresh_path, '/')
+    "let refresh_path=b:netrw_curdir
+    "let char=split(refresh_path, '\zs')
+    "let split=split(refresh_path, '/')
 
-    if (char[-1]=='/')
-        let refresh_path=join(split[0:-2], '/')
-    endif
+    "if (char[-1]=='/')
+    "    let refresh_path=join(split[0:-2], '/')
+    "endif
 
-    if (split[0]=='scp:')
-        let refresh_path=b:netrw_curdir
-    endif
+    "if (split[0]=='scp:')
+    "    let refresh_path=b:netrw_curdir
+    "endif
 
     let mf_list=MF_List()
 
