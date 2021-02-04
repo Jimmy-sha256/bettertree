@@ -27,6 +27,8 @@ function! s:win_by_bufname(bufname)
 endfunction
 
 command! -nargs=* WinGo call s:win_by_bufname(<q-args>)
+
+"jump to netrw
 nnoremap <Leader>i :WinGo netrw<CR>
 
 "refresh netrw
