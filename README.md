@@ -15,6 +15,10 @@ Plug 'jimmy-sha256/bettertree'
 #### Toggle Bettertree
 
 `<Ctrl>` + `t`
+
+#### Jump to Bettertree buffer
+
+`<Leader>` + `i`
   
 #### Tree navigation
 
